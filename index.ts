@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 
 import stringsController from "./controllers/strings";
+import productsController from "./controllers/products";
 
 const app: Express = express();
 
@@ -9,7 +10,8 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.use('/', stringsController);
+app.use('/', productsController);
 
-app.listen(3000,() => {
-    console.log(`[server]: Server is running at http://localhost:3000`);
+app.listen(3005,() => {
+    console.log(`[server]: Server is running at http://localhost:3005`);
 });
