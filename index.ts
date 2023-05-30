@@ -1,6 +1,7 @@
 import express, { Express, Request, Response } from "express";
 
 import cors from "cors";
+import bodyParser from "body-parser";
 
 
 import stringsController from "./controllers/strings";
@@ -9,8 +10,9 @@ import productListController from "./controllers/productlist";
 
 const app: Express = express();
 
-app.use(cors())
-
+app.use(cors({
+    origin: ['http://localhost:3006']
+}));
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Express + TypeScript Server');

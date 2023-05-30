@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import {Toode}   from "../models/Toode";
+import {Toode} from "../models/Toode";
 
 const router: Router = Router();
 
@@ -15,53 +15,51 @@ router.get("/tooted", (req: Request, res: Response) => {
     res.send(tooted)
 });
 
-router.get("/kustuta-toode/:index", (req: Request, res: Response) => {
-    tooted.splice(Number(req.params.index),1)
-    res.send(tooted)
-});
-
-router.get("/kustuta-toode-variant2/:index", (req: Request, res: Response) => {
-    tooted.splice(Number(req.params.index),1)
-    res.send("Toode kustutatud!")
-});
-
-router.get("/lisa-toode/:id/:nimi/:hind/:aktiivne", (req: Request, res: Response) => {
-    tooted.push(
-        new Toode(
-            Number(req.params.id),
-            req.params.nimi,
-            Number(req.params.hind),
-            req.params.aktiivne === "true")
-    )
-    res.send(tooted)
-});
-
-router.get("/hind-dollaritesse/:kurss", (req: Request, res: Response) => {
-    for (let index = 0; index < tooted.length; index++) {
-        tooted[index].price = tooted[index].price * Number(req.params.kurss);
+router.delete("/kustuta-toode/:index", (req: Request, res: Response) => {
+    if (/^[0-9]+$/.test(req.params.index)) {
+        tooted.splice(Number(req.params.index),1)
     }
     res.send(tooted)
 });
 
-router.get("/kustuta-koik-tooted", (req: Request, res: Response) => {
-    tooted.splice(0,tooted.length)
+router.delete("/kustuta-toode-variant2/:index", (req: Request, res: Response) => {
+    if (/^[0-9]+$/.test(req.params.index)) {
+        tooted.splice(Number(req.params.index),1);
+        res.send("Toode kustutatud!");
+    } else {
+        res.send("Toode kustutamine ei õnnestunud, sisesta number!");
+    }
+});
+
+router.post("/lisa-toode/:id/:nimi/:hind/:aktiivne", (req: Request, res: Response) => {
+    if (/^[0-9]+$/.test(req.params.id) && /^[0-9]+$/.test(req.params.hind)) {
+        tooted.push(
+            new Toode(
+                Number(req.params.id),
+                req.params.nimi,
+                Number(req.params.hind),
+                req.params.aktiivne === "true")
+        )
+    }
     res.send(tooted)
 });
 
-router.get("/aktiivsuse-muutmine-koik-false/", (req: Request, res: Response) => {
-    tooted.forEach((toode) => {
-        toode.isActive = !toode.isActive;
-    });
-    res.send(tooted);
+router.patch("/hind-dollaritesse/:kurss", (req: Request, res: Response) => {
+    if (/^[0-9]+$/.test(req.params.kurss)) {
+        for (let index = 0; index < tooted.length; index++) {
+            tooted[index].price = tooted[index].price * Number(req.params.kurss);
+        }
+    }
+    res.send(tooted)
 });
 
-router.get("/yks-toode/:index", (req: Request, res: Response) => {
-    res.send(tooted[Number(req.params.index)-1]);
+router.post("/lisa-toode", (req: Request, res: Response) => {
+    if (/^[0-9]+$/.test(req.body.id) && /^[0-9]+$/.test(req.body.price)) {
+        tooted.push(
+            new Toode(req.body.id, req.body.name, req.body.price, req.body.isActive)
+        )
+    }
+    res.send(tooted)
 });
 
-router.get("/yks-toode-kalleim", (req: Request, res: Response) => {
-    const suurimHind = Math.max(...tooted.map((toode) => toode.price));
-    const suurimaHinnagaToode = tooted.find((toode) => toode.price === suurimHind);
-    res.send(suurimaHinnagaToode);
-});
 export default router;
